@@ -1,0 +1,24 @@
+# 编辑器 / IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*~
+
+# 操作系统
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# 缓存与临时文件
+*.tmp
+*.log
+.cache/
+
+# 大型材料（模型、PDF 原件、数据集等），需要时用 Git LFS，不要直接提交
+*.pdf
+*.gguf
+*.safetensors
