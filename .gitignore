@@ -22,3 +22,7 @@ $RECYCLE.BIN/
 *.pdf
 *.gguf
 *.safetensors
+
+# 调研中间产物：脚本与提取文本，不进仓库（方法记录在文档的「调研方式」一节）
+_*.txt
+_pdf_*.py

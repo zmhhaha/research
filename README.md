@@ -6,7 +6,7 @@
 
 | 项目 | 调研日期 | 结论一句话 | 文档 |
 | --- | --- | --- | --- |
-| Strata | 2026-10-04 | 12 GB 显存 + 32 GB 内存可跑 125B MoE，MIT 开源，实测速度约为官方标称的一半 | [repos/strata/](repos/strata/README.md) |
+| Strata | 2026-10-04 | 12 GB 显存 + 32 GB 内存起可跑 125B MoE（真门槛是内存，且取决于显卡大小与上下文长度）；MIT 开源、有 9 页论文佐证官方速度；只能跑 Qwen3.8-Flash-Next 这一个模型 | [repos/strata/](repos/strata/README.md) |
 
 ## 结构约定
 
