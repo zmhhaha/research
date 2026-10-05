@@ -532,11 +532,11 @@ Set up Strata on this PC for me: https://github.com/Niko1221/Strata - follow doc
 | 论坛实测数据的原始上下文 | 未核实 | 只有搜索结果标题和摘要，未读到原帖全文 |
 | 与 ktransformers 的**同机对比** | 未核实 | 论文只把它列为相关工作（参考文献 14），**没有做过同机对测**；我方也未 clone 对方实现 |
 | Splash / ninfer / HyperQwen 具体借鉴了哪部分 | **部分核实** | 论文第 9 节确认"一个引擎只服务一个模型"的想法来自这三者，但未指明代码级借鉴细节 |
-| 论文的论证与实验 | **已核实** | 已全文解析 9 页（自建 PDF 文本提取器，见「调研方式」），第 4-6 节数据已录入本文档 |
+| 论文的论证与实验 | **已核实（二次复查）** | 9 页经 `mcp__pdf__read` 读为干净 Markdown；表 2/3/4/5 逐格、13 条发现逐条、第 7/9 节逐项，共 **47 项引用全部对拍通过**，未发现错误 |
 | `docs/DETAILS.md` 的全部实测数字 | **已核实** | 已全文精读 1,127 行，环境变量、API 字段、配置键、默认值均已提取 |
 | `setup.py` 的判卡与选档逻辑 | **已核实** | 已走读 4,422 行（grep 定位 + 18 个区间精读），结论见「硬件 / 软件门槛」 |
 | `docs/` 全部文档的覆盖度清单 | **已核实** | 28 个文件已清点并逐个给出内容摘要，见「`docs/` 全部文档清单」；其中 INTEL / AMD_HIP / MULTI_GPU / SECOND_GPU / UNSLOTH_Q4 / ORCA / MCP_SERVER / 老卡等已提取要点 |
-| 引擎内部实现是否与文档一致 | **部分核实** | 已做**定点常量级走读**（专家数/层数/`BLOB`/`--spec`/prefill/n-gram 表/ggml 来源），见「源码验证」；其中 3 项与文档表述方式不符。但**未做**全文走读（`src/` 68,796 行），论文与代码的逐条一致性仍未核对 |
+| 引擎内部实现是否与文档一致 | **部分核实** | 已做**定点常量级走读**（专家数/层数/`BLOB`/`--spec`/prefill/n-gram 表/ggml 来源），见「源码验证」；其中 3 项与文档表述方式不符。但**未做**全文走读（`src/` 68,796 行）。论文与代码的**文字层面**一致性已由 47 项引用复查覆盖，机制层面仍未逐条核对 |
 | 温度采样 / 拒绝采样现状 | 未核实 | 论文说 greedy-only 是当时的局限；代码是否已支持未核 |
 | Intel Arc / ROCm 的**实际可用性** | 未核实 | 已读文档要点，但**未做实测**；且 Intel 路径仍标为实验性，AMD Windows 的现成引擎据其文档尚未在独显上跑过模型 |
 | AMD HIP 的"每 10 次启动约 1 次输出不同" | 未核实 | 上游文档自己记录但**未解释原因**（`docs/AMD_HIP.md:283-284`）；这不是本调研的发现，而是转述 |
@@ -544,10 +544,14 @@ Set up Strata on this PC for me: https://github.com/Niko1221/Strata - follow doc
 ## 调研方式
 
 - **手段**：`git clone` 拿到完整仓库（845 commits，v0.1.39）后**直接读源文件**——`README.md`、`docs/DETAILS.md`（全文 1,127 行）、`docs/MODELS.md`、`docs/HOW_IT_WORKS.md`、`docs/INSTALL.md`、`docs/BATCHING.md`、`docs/TROUBLESHOOTING.md`、`docs/COMMUNITY_BENCHMARKS.md`、`setup.py`（4,422 行，判卡/选档/下载/校验逻辑）、`LICENSE`，外加 `git log` / `git shortlog` / `git ls-files` 统计。
-- **论文解析**：环境里没有任何 PDF 库，因此写了一个针对该文件的文本提取器（`docs/_pdf_extract.py`）。过程中确认了三件事：该 PDF 的正文是 **Identity-H 子集字体**（每字形 2 字节）、每个字体带**真实 ToUnicode CMap**（必须用它；码值恰好等于 ASCII 只是巧合）、且**每个字形单独定位**（空格要从 `Td` 偏移里还原）。最终 9 页全部提取，数字已逐表核对。
+- **论文解析**：先用 DSH 新增的 **`pdf` MCP server（`@sylphx/anymd`，8.5.1）** 把 9 页全文读成 Markdown，逐表核对。该 server 由 `cordis.patch.yml` 的 `pdf-mcp` 条目接入，工具为 `mcp__pdf__read` / `search` / `outline` / `inspect`。
+  - **此前它是纯手工解析的**，因为环境里没有任何 PDF 库。当时的自建提取器（`docs/_pdf_extract.py`）确认了三件事：该 PDF 的正文是 **Identity-H 子集字体**（每字形 2 字节）、每个字体带**真实 ToUnicode CMap**（必须用它；码值恰好等于 ASCII 只是巧合）、且**每个字形单独定位**（空格要从 `Td` 偏移里还原）。
+  - 手工提取器的输出有**系统性失真**（字符错位、词内多余空格如 `Fl ash-Next`、表格塌成逐字）。用它核对数字，本质上是在核对"我自己的修正是否正确"。**换用 anymd 后，本轮又在未经加工的原文上把 47 项论文引用逐条复查了一遍，未发现错误**——所以这份"已核实"是后验确认过的，不是当初的自证。
+  - 顺带记录：该 PDF 的**标题行本身带散落空格**（`Fl ash-Next`、`S trata`、`Wher e the time goes`），这是文件文字层自带的，不是提取器缺陷；正文段落干净。
 - **当时的限制**：本机 DNS 被网络层劫持为 fake-ip（`198.18.0.0/15`），DSH 的 `web_fetch` 因 SSRF 防护拒绝非公网 IP；同时沙箱只放行 git 出网，`curl` / `.NET TLS` 全部失败（连 `www.baidu.com` 都不通）。**所以网页调研这条路走不通，全部结论基于 git 通道取得的真实源码与仓库内文档**，这也让可信度高于纯搜索。
 - **本次环境故障**：工作区 `D:\github\research` 上缺少"取得所有权"权限，DSH 无法授予写入权限（`SetNamedSecurityInfoW failed (Win32 5)`），已按内置诊断流程修复并验证；回滚脚本在 `D:\github\_dsh-acl-recovery\`。
-  - 后续发现 `docs\` 子目录仍有问题：文件**可创建、可读取、可修改，但删除被拒**（PowerShell 与 Python 都报 access denied）。目录与文件上其实都存在含 `Delete` 的权限项，但持久化的**不可继承**完全控制条目未能下传到子文件；诊断脚本对该文件判定"无需更改"后停止。**这是本次未解决的平台限制**，因此调研用的辅助脚本以忽略规则处理，而非删除。
+  - 后续发现 `docs\` 子目录仍有问题：文件**可创建、可读取、可修改，但删除被拒**（PowerShell 与 Python 都报 access denied）。目录与文件上其实都存在含 `Delete` 的权限项，但持久化的**不可继承**完全控制条目未能下传到子文件；诊断脚本对该文件判定"无需更改"后停止。
+  - **收尾时该问题已被绕过**：`docs\` 下三个辅助脚本改用一次性提权删除成功，`docs\` 现为空目录（Git 不跟踪空目录，不影响仓库）。所以这条平台限制的最终状态是"**默认权限下删除被拒，需提权才能删**"。
   - 另注：沙箱内 **PowerShell 向 `docs\` 写入被拒**（Python 写入正常），故辅助脚本放在工作区根目录。
 - **复现方式**：
   ```bash
@@ -556,7 +560,7 @@ Set up Strata on this PC for me: https://github.com/Niko1221/Strata - follow doc
   ```
   本地已存在副本：`D:\github\Strata`
 - **后续可做**：
-  1. **系统走读 `src/`**（68,796 行），核对论文与实现是否一致——本次两次尝试均失败，是剩下最大的空白。
+  1. **系统走读 `src/`**（68,796 行），核对论文与实现是否一致——这是剩下最大的空白（已做的只有常量级走读；论文的 47 项引用复查属文字层面，不是机制层面）。
   2. clone **ktransformers** 做同机/同口径对比（论文只把它列为相关工作）。
   3. 精读尚未展开的 **`docs/INTEL*.md`、`docs/AMD_HIP*.md`、`docs/MULTI_GPU.md`、`docs/UNSLOTH_Q4.md`、`docs/ORCA*.md`** 全文（本轮只提取了要点，清单见「`docs/` 全部文档清单」）。
   4. 核实温度采样/拒绝采样的现状（论文的局限之一）。
