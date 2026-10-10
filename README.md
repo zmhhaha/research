@@ -7,6 +7,7 @@
 | 项目 | 调研日期 | 结论一句话 | 文档 |
 | --- | --- | --- | --- |
 | Strata | 2026-10-04 | 12 GB 显存 + 32 GB 内存起可跑 125B MoE（真门槛是内存，且取决于显卡大小与上下文长度）；MIT 开源、有 9 页论文佐证官方速度；只能跑 Qwen3.8-Flash-Next 这一个模型 | [repos/strata/](repos/strata/README.md) |
+| Hindsight | 2026-10-10 | agent 长期记忆服务：写入侧用 LLM 抽事实、读取侧四路检索 + 重排、后台整合成 observation 与 mental model；MIT、Docker 一键起、60+ 集成，但**每条记忆写入默认都要花外部 LLM 的 token**，标称 SOTA 分数在仓库内无法复现，且不接受外部 PR | [repos/hindsight/](repos/hindsight/README.md) |
 
 ## 结构约定
 
@@ -14,6 +15,7 @@
 research/
 ├── README.md              本索引
 ├── TEMPLATE.md            单篇调研文档模板
+├── .cache/                 上游源码副本（gitignore，不进仓库），如 .cache/hindsight
 └── repos/
     └── <项目名>/
         ├── README.md      主调研文档
