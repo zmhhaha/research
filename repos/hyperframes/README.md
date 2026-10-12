@@ -27,7 +27,7 @@ HeyGen 开源的 **HTML → 确定性 MP4 渲染框架**：一份 HTML（`data-*
 | 最新版本 | `v0.8.149`（2026-10-11）。**tag 总数 527，但要拆开看**：其中 508 个是 `v*` 版本 tag，另 19 个是 `backup/*`、`pre-split/*`、`reference/*`、`model-assets-v1` 这类里程碑/备份 tag。`v0.8.*` 一共 151 个；`v0.8.100`→`v0.8.149`（50 个版本）只用了 **10.6 天** | 已验证 |
 | 首次提交 | 2026-03-10，"chore: initialize repository" | 已验证 |
 | 仓库体积 | git pack 494.42 MiB；工作树 322.3 MB（`docs/` 120.5 MB、`registry/` 101.9 MB、`packages/` 79.2 MB、`skills/` 15.8 MB）；另有 LFS 托管的约 240 MB 回归视频 | 已验证（`README.md:340`） |
-| 代码规模 | 追踪文件 9262：`.ts` 3226、`.json` 1179、`.html` 1179、`.md` 847、`.mdx` 604、`.tsx` 562、`.mjs` 430；**测试 1814 个文件 / 427,900 行**（studio 695、cli 362、core 203、producer 125、engine 95）；`docs/` 下 604 个 `.mdx` | 已验证 |
+| 代码规模 | 追踪文件 9262：`.ts` 3226、`.json` 1179、`.html` 1179、`.md` 847、`.mdx` 604、`.tsx` 562、`.mjs` 430；测试按 `*.test.*` / `*.spec.*` 匹配 **1814 个文件**，其中 1688 个 `.test.{ts,tsx,mjs,js}` 实测共 **458,432 行**（分布：studio 695、cli 362、core 203、producer 125、engine 95）；`docs/` 下 604 个 `.mdx` | 已验证（行数用 .NET `ReadAllLines` 复核） |
 | CI 规模 | **16 个 workflow 文件**；其中 `ci.yml` 一个文件就有 **30+ 个 job**（顶层条目实测 31 个：build / lint / format / typecheck / fallow 死代码 / test-reachability / test-studio / test-runtime / test-support / producer-source-tests / test-skills / skills-manifest / studio-load-smoke / studio-edit-accuracy / cli-smoke-required / filesize / semantic-pr-title …），另有 `publish.yml`、`regression.yml`、`preview-regression.yml`、`fast-video-validation.yml`、`windows-render.yml`、`player-perf.yml`、`codeql.yml` 等专项流水线 | 已验证（`.github/workflows/`） |
 | 发布工具链 | **没有用 changesets**；是自研脚本：`scripts/release-prepare.ts`、`set-version.ts`（注释写明 fixed versioning）、`draft-changelog.ts`、`validate-release-channel.mjs`；`publish.yml` 强制"稳定版只能来自已合并的 `release/v*` PR"；`releases/` 下 309 篇发布说明 | 已验证 |
 | npm 发布 | 仓库内的 `@hyperframes/cli` **以不带 scope 的 `hyperframes` 名发布到 npm**（`npx hyperframes …` 就是它）；14 个包版本 lockstep 在 0.8.149（`@hyperframes/sdk-playground` 滞后在 0.6.106） | 已验证（`.github/workflows/publish.yml:165`、各 package.json） |
@@ -112,10 +112,10 @@ releases/               → 309 份按版本的发布说明
 
 - **提交前就拦**：`lefthook.yml` 的 pre-commit 跑 oxlint / oxfmt / skills-manifest 新鲜度 / typecheck / fallow 死代码审计 / 大文件检查 / 被跟踪产物检查，并限制 studio 单文件不超过 600 行；commit-msg 走 commitlint。`knip.config.ts` 另做未用导出检测。
 - **CI 里真的渲染视频**：`ci.yml` 的 `cli-smoke-required` 用 `ffmpeg testsrc2` 造一段输入 → 跑 `hyperframes render`（libx264）→ 断言产出的 mp4 非空，还带 `page.goto` ≤5s 的预算；`test-support` 通过 `browser-actions/setup-chrome` 注入浏览器路径；仓库自备 `install-ffmpeg-linux` / `install-ffmpeg-windows` action。**这套东西是"确定性渲染"能成立的实际证据**——不是口号，而是每次 PR 都在跑。
-- **贡献是开放的**：`CONTRIBUTING.md`（269 行）写明 fork → PR 流程、`good first issue` / `help wanted` / `difficulty/*` 标签体系（配合 82 行的 `TRIAGE.md`）、每个 commit 必须签名、PR 需至少一位有写权限的 maintainer 批准；还专门有一段 **AI 贡献政策**（不需要披露 AI 参与，但作者对正确性负责、AI 写的测试必须真实、看不懂的代码会被拒）。
+- **贡献是开放的**：`CONTRIBUTING.md`（269 行）写明 fork → PR 流程、`good first issue` / `help wanted` / `difficulty/*` 标签体系（配合 123 行的 `TRIAGE.md`）、每个 commit 必须签名、PR 需至少一位有写权限的 maintainer 批准；还专门有一段 **AI 贡献政策**（不需要披露 AI 参与，但作者对正确性负责、AI 写的测试必须真实、看不懂的代码会被拒）。
 - **但治理是 BDFL**：`CONTRIBUTING.md:259-263` 明说"HeyGen 的核心 maintainer 有最终决定权"。`.github/CODEOWNERS` 只有 3 行、且只覆盖 `pr-captures` 相关文件，**不是全仓所有权**；仓库里没有 `GOVERNANCE.md` / `MAINTAINERS.md` / `FUNDING.yml` / dependabot 配置。
 - **贡献者高度集中、且以公司内部为主**：107 位作者共 5483 次提交，前三名约占 **72%**；按提交邮箱统计，`heygen.com` 域名占 **90.2%**，外部贡献约 9.8%——**"开源"的成分真实存在，但项目实质由 HeyGen 团队驱动**。
-- **AI 协作是明牌**：`869 / 5483`（15.9%）的提交带 `Co-Authored-By` trailer，且以 Claude 系列为绝对主力（Opus 5 出现 622 次、Opus 4.8 451 次、Opus 4.6 409 次…）；仓库根同时提供 92 行的 `CLAUDE.md` 与 84 行的 `AGENTS.md`。这既解释了它为什么能在 7 个月里堆出 42 万行测试代码，也意味着**代码审计与接手的方式需要按"人机混合产出"来安排**。
+- **AI 协作是明牌**：`869 / 5483`（15.9%）的提交带 `Co-Authored-By` trailer，且以 Claude 系列为绝对主力（Opus 5 出现 622 次、Opus 4.8 451 次、Opus 4.6 409 次…）；仓库根同时提供 124 行的 `CLAUDE.md` 与 111 行的 `AGENTS.md`。这既解释了它为什么能在 7 个月里堆出 45 万行测试代码，也意味着**代码审计与接手的方式需要按"人机混合产出"来安排**。
 
 ### 渲染管线：它自己承认的现实问题
 
@@ -314,7 +314,7 @@ npx hyperframes check    # headless Chrome 真渲染门：运行时错误、布�
   2. 自己读：`README.md`（364 行）、根 `AGENTS.md` / `CLAUDE.md`、`CREDITS.md`、`ADOPTERS.md`、根 `package.json`、`packages/cli/package.json`，并实测了文件数/体积/目录构成/tag 与提交分布/测试文件数/npm 包清单。
   3. 三个子代理分工走读：① 渲染引擎（packages 职责与代码量、六阶段管线、seek 机制、虚拟时间垫片、默认参数与并行度、lint/check 规则码、三条云渲染路径、13 个帧适配器）；② composition 契约与 skills 体系（data-* 属性、21 个 skill 的实读计数、脚手架、registry 实际条目数、frame.md）；③ 发布节奏、CI 与质量工程、许可与商业边界、治理与协作痕迹。
   4. 交叉核对了三组"文档 vs 实际"：registry 规模（README 说 "50+ blocks"，实际 210）、`data-track-index` 语义（skill 与 core.md 相反）、CDN 依赖与"渲染期不联网"的张力。
-  5. **子代理数字我自己复核过一遍**，并纠正了两处：workflow 文件是 **16 个**（不是 17）、`CONTRIBUTING.md` 是 **269 行**（我最初用 `Measure-Object -Line` 得到的 189 行是错的，该方法在长文件上不可靠），tag 拆分为 **508 个 `v*` + 19 个其他**；凡与本机测量冲突的以本机复测为准。
+  5. **子代理数字我自己复核过一遍**，并纠正了几类偏差：workflow 文件是 **16 个**（不是 17）；tag 拆分为 **508 个 `v*` + 19 个其他**；**所有行数改用 .NET `ReadAllLines` 重新统计**——子代理给的是"非空行"口径，而我最初用的 `Get-Content`（本机是 Windows PowerShell 5.1）在含非 ASCII 内容的 UTF-8 文件上还会吞掉换行，导致行数偏小。本文最终采用真实总行数（`CONTRIBUTING.md` 269、`AGENTS.md` 111、`CLAUDE.md` 124、`TRIAGE.md` 123、测试 458,432 行）。
 - **当时的限制**：
   - `web_fetch` 与 pdf MCP 的 URL 读取均被 DNS fake-IP 挡住（SSRF 保护），**无法打开任何网页原文**（hyperframes.dev、heygen.com、npm 页面都不可达），外部信息只能来自搜索摘要并按"未核实"处理。
   - 按仓库 `AGENTS.md`，构建需要 `bun install` + `bun run build`（联网），渲染还需 FFmpeg + Chrome；本次**未安装、未构建、未渲染**，因此**没有任何运行时实测**。

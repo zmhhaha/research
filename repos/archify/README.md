@@ -27,7 +27,7 @@ Archify 是**给 coding agent 用的画图 skill**：agent 按 schema 写一份 
 | 最新版本 | `v3.0.1`（2026-09-28）；共 22 个 tag（含 2 个 DSH adapter tag） | 已验证（`git tag`） |
 | 首次提交 | 2026-04-15，"Initial commit: Archify 2.0" | 已验证 |
 | 仓库体积 | git pack 672.87 MiB；工作树仅 61.3 MB（其中 `docs/` 30.8 MB、`archify/` 10.1 MB、`examples/` 9.4 MB） | 已验证 |
-| 代码规模 | 追踪文件 798：`.mjs` 296、`.md` 131、`.json` 121、`.html` 58；CLI 单文件 `archify/bin/archify.mjs` 6,732 行；测试 `archify/test/*.test.mjs` **165 个文件 / 58,484 行**（另有 fixtures 与 helpers，目录共 206 个文件） | 已验证 |
+| 代码规模 | 追踪文件 798：`.mjs` 296、`.md` 131、`.json` 121、`.html` 58；CLI 单文件 `archify/bin/archify.mjs` 6,936 行；测试 `archify/test/*.test.mjs` **165 个文件 / 62,919 行**（另有 fixtures 与 helpers，目录共 206 个文件） | 已验证（行数用 .NET `ReadAllLines` 复核） |
 | CI 规模 | `.github/workflows/ci.yml` 有 12 个 job：Node 18/20/22/24 矩阵测试、真实 Chrome 浏览器门、zip 字节一致性、已发布 manifest 校验、三平台打包冒烟、官网构建、Windows 路径可移植性等 | 已验证 |
 | 稳定版分发物 | `archify.zip` 2,157,447 字节 / 106 条（清洗过的 Skill 包） | 已验证 |
 | 热度（star） | 仓库自维护的 star-history 图（`star-history` 分支，2026-10-05 更新）显示 5 月起步、8 月前数千、9 月起陡增，终点越过 60K 网格线，按坐标外推约 **7–8 万** | **估算**（方法见「调研方式」，非 GitHub 官方页面） |
@@ -247,6 +247,7 @@ node bin/archify.mjs compare architecture base.json head.json delta.html --json 
   - `web_fetch` 与 pdf MCP 的 URL 读取均被 DNS fake-IP 挡住（SSRF 保护），**无法打开任何网页原文**，star 徽章、trending 截图、QbitAI 报道、skills.sh 计数全部只能按"未核实"处理。
   - 按仓库 `AGENTS.md` 的约束，**本次未安装、未执行 Archify 任何组件**（没有跑 `npx skills add`，也没有装 DSH 插件），因此**没有任何运行时实测**：渲染耗时、真实出图效果、browser-check 在本机的表现都未验证。基准数字全部来自仓库自带结果文件。
   - 子代理提供的行号与体积我做了抽查复核（SKILL.md 实际 109 行、迁移/打包条目数、tag 日期、测试文件数）；凡与本机测量冲突的，以本机测量为准。
+  - **代码行数在 2026-10-12 做过一次口径修正**：本机是 Windows PowerShell 5.1，`Get-Content` / `Measure-Object -Line` 在含非 ASCII 内容的 UTF-8 文件上会吞换行、且默认只算非空行，导致行数偏小。上表的行数已改为 .NET `ReadAllLines` 统计的**真实总行数**（CLI 单文件 6,936 行、测试 62,919 行；此前记的 6,732 / 58,484 偏小）。
 - **复现方式**：
   ```powershell
   git clone https://github.com/tt-a1i/archify.git

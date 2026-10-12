@@ -24,7 +24,7 @@ Vectorize.io 开源的 agent 长期记忆服务：`retain` 时用 LLM 把内容�
 | 首次提交 | 2025-10-30，"initial commit" | 已验证 |
 | 仓库体积 | git pack 783 MiB；工作树约 1 GB | 已验证（`git count-objects -vH`） |
 | 代码构成 | 追踪文件 5041 个：`.py` 1982、`.md` 832、`.ts` 584、`.go` 245、`.rs` 36 | 已验证（`git ls-files`） |
-| 核心代码量 | `hindsight-api-slim/hindsight_api` 351 个 `.py` / 146,612 行；其中 `engine/` 173 个文件 / 102,831 行；最大单文件 `engine/memory_engine.py` 20,953 行 | 已验证（逐文件统计） |
+| 核心代码量 | `hindsight-api-slim/hindsight_api` 351 个 `.py` / 169,888 行；其中 `engine/` 173 个文件 / 118,341 行；最大单文件 `engine/memory_engine.py` 23,390 行 | 已验证（行数用 .NET `ReadAllLines` 复核） |
 | 论文 | arXiv:2512.12818（README 引用）；**仓库内只有链接，没有 PDF/LaTeX 正文** | 已验证（全仓唯一 `.pdf` 是 retain 示例附件） |
 | 热度（star） | 厂商博客称 2026-09-28 达到 4 万 star（更早一篇称 2026-08-14 达 2 万） | **未核实**（本环境无法访问 GitHub 页面，只有搜索摘要） |
 | 官方自称规模 | "25+ LLM providers"、"60+ integrations" | 未核实（README 自述，未逐项清点） |
@@ -226,6 +226,7 @@ coding agent 一条命令接入：`npx @vectorize-io/hindsight-coding-agents ins
   - `web_fetch` 与 pdf MCP 的 URL 读取都被 DNS fake-IP（`github.com` → 198.18.0.54）挡在 SSRF 保护之外，本次**无法打开任何网页原文**，也无法读取 arXiv 论文全文；只有 `web_search` 的摘要可用。
   - 没有 LLM API key、没有 Docker/Postgres 环境，因此**没有把服务跑起来**：本文件里没有任何实测性能数据。要实测需要拉 ~9 GB 镜像（或 pip 安装含 torch 的 full 包）+ 下载 HuggingFace 模型 + 一个 LLM key。
   - 子代理报告的数字经过抽查：配置默认值、基准组件、贡献者统计均已本人复核；其中一位子代理给出的贡献者提交数与本机测量不符（其 Top5 之和超过总提交数），本文**采用本机测量值**并已弃用该组数字。
+  - **代码行数在 2026-10-12 做过一次口径修正**：本机是 Windows PowerShell 5.1，`Get-Content` / `Measure-Object -Line` 在含非 ASCII 内容的 UTF-8 文件上会吞换行、且默认只算非空行，导致行数偏小。上表的核心代码量已改为 .NET `ReadAllLines` 统计的**真实总行数**（原值 146,612 / 102,831 / 20,953 偏小，现为 169,888 / 118,341 / 23,390）。
 - **复现方式**：
   ```powershell
   git clone https://github.com/vectorize-io/hindsight.git
