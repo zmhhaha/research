@@ -11,6 +11,8 @@
 | Archify | 2026-10-10 | 给 coding agent 用的画图 skill：agent 写 typed JSON，零依赖 Node CLI 渲染成**自包含交互式 HTML**（约 745 KB），交付前过 schema / 布局 / HTML / 真实浏览器四道闸、失败给机器可读修复回执；MIT、无 API key、无服务端。代价：图的语义质量取决于你的模型（**作者自测首过可用率仅 53%–67%**），仓库 git pack 673 MiB，bus factor = 1；DSH 插件只声明支持精确宿主 0.1.2-rc.1 且桌面版未验收 | [repos/archify/](repos/archify/README.md) |
 | HyperFrames | 2026-10-12 | HeyGen 开源的 HTML→**确定性 MP4** 渲染框架：合成即纯 HTML（`data-*` 时序 + 可寻址动画）、headless Chrome 逐帧 seek + FFmpeg 编码、无构建步骤、Apache-2.0 且无按次渲染费，另配 21 个 agent skills 与 registry 里 454 条可安装项，已在 HeyGen 生产使用。代价：版本仍是 0.8.x 却已有 **527 个 tag**（高频发布）、渲染重（需 Node 22+ / Chrome / FFmpeg）、大量区块直接引 CDN、GSAP 等第三方素材非 OSI 许可需逐块核对 | [repos/hyperframes/](repos/hyperframes/README.md) |
 | REA | 2026-10-12 | 把 AI agent 接到逆向工程工具链上的**本地** MCP server + CLI + skill：原生二进制（Hopper/Ghidra/IDA）、JS/Electron、.NET、Android、固件、网站、抓包、进程行为等十几种目标，每条结论带证据与"未知"标注；权限模型很严（IDA 只读、Ghidra 临时库、安装需批准、第三方引擎固定 release+commit+许可）。MIT，但**深度分析依赖商业工具**（Hopper/IDA 付费，Ghidra 免费）；2026-10 现象级爆红——仓库自身记录 star **4 天从 2 万涨到 11 万**（无法独立核实），版本已 6.4.0、10 月 12 天 1643 次提交，热度与成熟度不成正比 | [repos/rea/](repos/rea/README.md) |
+| OpenRig | 2026-10-19 | 原生 Claude Code / Codex 等 harness 的团队控制面：YAML 拓扑、稳定席位、SQLite 持久任务与 tmux 消息投递，Apache-2.0；价值在团队生命周期和工作交接。代价：原生 Windows 不支持（需 WSL2，尚无自动测试覆盖），会写 provider 信任/hooks/config，**kernel 的 Codex 席位无覆盖策略时默认全权限免审批**；真实协作收益未实测 | [repos/openrig/](repos/openrig/README.md) |
+| PPT Master | 2026-10-20 | Agent Skill + Python 的受约束 SVG→原生 DrawingML PPTX 工具链，MIT；支持显式原生图表/表格、Master/Layout 与保留型编辑。边界：默认图表是可编辑形状，数据驱动版需显式导出；视觉审查可选，PowerPoint 是验收目标；云端模型/生图/语音仍可外发数据，PyMuPDF 为 AGPL，素材许可另算 | [repos/ppt-master/](repos/ppt-master/README.md) |
 
 ## 结构约定
 
